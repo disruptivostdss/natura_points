@@ -21,7 +21,7 @@ namespace NaturaPoints.WebAPI.Persistencia.UnitsOfWork
         #region GETS
         
 
-        public IGenericRepository<Usuario> UsuarioRespository
+        public IGenericRepository<Usuario> UsuarioRepository
         {
             get
             {
@@ -34,7 +34,7 @@ namespace NaturaPoints.WebAPI.Persistencia.UnitsOfWork
             
         }
 
-        public IGenericRepository<Localidade> LocalidadeRespository
+        public IGenericRepository<Localidade> LocalidadeRepository
         {
             get
             {
@@ -47,7 +47,7 @@ namespace NaturaPoints.WebAPI.Persistencia.UnitsOfWork
 
         }
 
-        public IGenericRepository<Checkin> CheckinRespository
+        public IGenericRepository<Checkin> CheckinRepository
         {
             get
             {

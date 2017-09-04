@@ -77,6 +77,10 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -86,6 +90,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -165,6 +173,16 @@
     <Folder Include="Views\Checkin\" />
     <Folder Include="Views\Localidade\" />
     <Folder Include="Views\Usuario\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NaturaPoints.WebAPI.Dominio\NaturaPoints.WebAPI.Dominio.csproj">
+      <Project>{A0E12CC6-8EE8-4126-B978-61C8C628B3AA}</Project>
+      <Name>NaturaPoints.WebAPI.Dominio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NaturaPoints.WebAPI.Persistencia\NaturaPoints.WebAPI.Persistencia.csproj">
+      <Project>{D478FC92-5635-4234-B57F-F2A020DDB72B}</Project>
+      <Name>NaturaPoints.WebAPI.Persistencia</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
