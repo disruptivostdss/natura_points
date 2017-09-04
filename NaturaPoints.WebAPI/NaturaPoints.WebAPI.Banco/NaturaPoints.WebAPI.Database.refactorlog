@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="68a54fe8-807d-4654-99cb-8775b6b6ac53" ChangeDateTime="09/04/2017 11:31:55">
+    <Property Name="ElementName" Value="[dbo].[Usuario].[Pontos]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Usuario]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Ponto" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eb3ab6fb-d856-49d5-bd35-f12ec98bf733" ChangeDateTime="09/04/2017 11:44:17">
+    <Property Name="ElementName" Value="[dbo].[FK_Checkin_ToTable]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Checkin]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Checkin_Localidade]" />
+  </Operation>
+</Operations>
