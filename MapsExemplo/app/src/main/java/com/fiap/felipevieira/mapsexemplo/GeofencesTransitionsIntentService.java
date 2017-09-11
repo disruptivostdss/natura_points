@@ -11,6 +11,8 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
@@ -25,6 +27,8 @@ import java.util.List;
 
 public class GeofencesTransitionsIntentService extends IntentService {
 
+
+
     protected static final String TAG = "geofence-transi-ser";
 
     public GeofencesTransitionsIntentService() {
@@ -38,6 +42,8 @@ public class GeofencesTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if(geofencingEvent.hasError()){
             String errorMessage = Integer.toString(geofencingEvent.getErrorCode());
@@ -51,6 +57,9 @@ public class GeofencesTransitionsIntentService extends IntentService {
                 geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
             List<Geofence> triggeringGeofences =
                     geofencingEvent.getTriggeringGeofences();
+
+
+
 
 
             sendNotification(getGeofenceTransitionDetails(this,geofenceTransition,triggeringGeofences));
@@ -109,12 +118,12 @@ public class GeofencesTransitionsIntentService extends IntentService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Define the notification settings.
-        builder.setSmallIcon(R.drawable.ic_launcher)
+        builder.setSmallIcon(R.drawable.logo)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.ic_launcher))
-                .setColor(Color.RED)
+                        R.drawable.logo))
+
                 .setContentTitle(notificationDetails)
                 .setContentText(getString(R.string.geofence_transition_notification_text))
                 .setContentIntent(notificationPendingIntent);

@@ -2,7 +2,9 @@ package com.fiap.felipevieira.mapsexemplo;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by felipe.vieira on 30/08/2017.
@@ -25,7 +27,16 @@ public final class Constantes {
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
 
-    public static final float GEOFENCE_RADIUS_IN_METERS = 40;
+    public static final float GEOFENCE_RADIUS_IN_METERS = 30;
+
+    public static final List<Usuario> USUARIOS = new ArrayList<>();
+
+    static {
+        USUARIOS.add(0,new Usuario(1,"José Mariano Leite",0));
+        USUARIOS.add(0,new Usuario(2,"Maria Joaquina Silveira",10));
+        USUARIOS.add(0,new Usuario(3,"Joana Mariana Bosque",0));
+        USUARIOS.add(0,new Usuario(4,"Maria de Fátima Silverado",0));
+    }
 
 
     public static final HashMap<String, LatLng> MARCADORES_CHECKIN = new HashMap<String, LatLng>();
@@ -36,6 +47,7 @@ public final class Constantes {
         MARCADORES_CHECKIN.put("LINS X AMARANTE",new LatLng(-23.572936, -46.622789));
         MARCADORES_CHECKIN.put("BOTICÁRIO", new LatLng(-23.573696, -46.622946));
         MARCADORES_CHECKIN.put("COPI", new LatLng(-23.574641, -46.623228));
+        MARCADORES_CHECKIN.put("BELLA", new LatLng(-23.594129, -46.614189));
 
     }
 }
