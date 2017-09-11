@@ -27,13 +27,20 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener,ResultCallback<Status> {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener,ResultCallback<Status>,OnMapReadyCallback {
 
     private final String LOG_TAG = "FelipeTestApp";
 
@@ -42,7 +49,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private ArrayList<Geofence> mGeofenceList;
-    private Button btnGeofence;
+
+    private GoogleMap mMap;
+    MarkerOptions mo;
+    Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +68,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
 
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragmento);
 
         txtLatitude = (TextView) findViewById(R.id.txtLatitude);
         txtLongitude = (TextView) findViewById(R.id.txtLongitude);
-        btnGeofence = (Button) findViewById(R.id.btnGeofences);
 
-        populateGeofenceList();
 
+
+        GoogleMapOptions options = new GoogleMapOptions();
+        options.mapType(GoogleMap.MAP_TYPE_TERRAIN)
+                .compassEnabled(true)
+                .rotateGesturesEnabled(true);
+
+        mo = new MarkerOptions().position(new LatLng(0, 0)).title("Minha localização atual");
+
+        mapFragment.getMapAsync(this);
         buildGoogleApiClient();
+        populateGeofenceList();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        marker =  mMap.addMarker(mo);
+
 
     }
 
@@ -123,6 +149,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.i(LOG_TAG, location.toString());
         txtLongitude.setText(Double.toString(location.getLongitude()));
         txtLatitude.setText(Double.toString(location.getLatitude()));
+
+        LatLng mCoordenadas = new LatLng(location.getLatitude(), location.getLongitude());
+        marker.setPosition(mCoordenadas);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mCoordenadas));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18), 2000, null);
     }
 
 
@@ -157,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     // Create the geofence.
                     .build());
+
         }
     }
 
@@ -206,4 +238,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             String errorMessage = Integer.toString(status.getStatusCode());
         }
     }
+
+
 }

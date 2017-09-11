@@ -22,6 +22,9 @@
         <meta-data android:name="com.goole.android.gms.version"
                     android:value="@integer/google_play_services_version"/>
         <service android:name=".GeofencesTransitionsIntentService" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAYb10Gqc7D1AopU94TXgIrVAD0pRfd-Bs"/>
     </application>
 
 
