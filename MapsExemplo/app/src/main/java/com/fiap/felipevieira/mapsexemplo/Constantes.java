@@ -27,7 +27,7 @@ public final class Constantes {
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
 
-    public static final float GEOFENCE_RADIUS_IN_METERS = 30;
+    public static final float GEOFENCE_RADIUS_IN_METERS = 50;
 
     public static final List<Usuario> USUARIOS = new ArrayList<>();
 
@@ -39,15 +39,4 @@ public final class Constantes {
     }
 
 
-    public static final HashMap<String, LatLng> MARCADORES_CHECKIN = new HashMap<String, LatLng>();
-
-    static {
-        MARCADORES_CHECKIN.put("CASA", new LatLng(-23.629444, -46.570946));
-        MARCADORES_CHECKIN.put("FIAP", new LatLng(-23.574047, -46.623441));
-        MARCADORES_CHECKIN.put("LINS X AMARANTE",new LatLng(-23.572936, -46.622789));
-        MARCADORES_CHECKIN.put("BOTICÁRIO", new LatLng(-23.573696, -46.622946));
-        MARCADORES_CHECKIN.put("COPI", new LatLng(-23.574641, -46.623228));
-        MARCADORES_CHECKIN.put("BELLA", new LatLng(-23.594129, -46.614189));
-
-    }
 }

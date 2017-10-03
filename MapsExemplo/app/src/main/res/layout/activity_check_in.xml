@@ -12,9 +12,9 @@
     <ImageView android:id="@+id/imgCheckin"
         android:layout_width="300dp"
         android:layout_height="300dp"
-
+        android:src="@drawable/natura_logo_11"
         android:layout_centerHorizontal="true"/>
-    <!--android:src="@drawable/natura_logo_11"-->
+
     <TextView android:id="@+id/txtNomeCheckin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
