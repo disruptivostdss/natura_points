@@ -6,30 +6,27 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofenceStatusCodes;
+
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by felipe.vieira on 30/08/2017.
- */
 
 public class GeofencesTransitionsIntentService extends IntentService {
 
 
 
     protected static final String TAG = "geofence-transi-ser";
+
+    private String nomeGeofence;
 
     public GeofencesTransitionsIntentService() {
         super("TAG");
@@ -53,17 +50,17 @@ public class GeofencesTransitionsIntentService extends IntentService {
 
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
-        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+
+        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
             List<Geofence> triggeringGeofences =
                     geofencingEvent.getTriggeringGeofences();
-
-
-
-
-
+            Log.i("TRIGGER_GEOFENCE",triggeringGeofences.toString());
             sendNotification(getGeofenceTransitionDetails(this,geofenceTransition,triggeringGeofences));
-        }
+
+        }else
+            if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+                //IMPLEMENTAR
+            }
     }
 
 
@@ -73,11 +70,13 @@ public class GeofencesTransitionsIntentService extends IntentService {
             List<Geofence> triggeringGeofences) {
 
         String geofenceTransitionString = getTransitionString(geofenceTransition);
-
+        Log.i("TTRIGGER_GEOFENCE_2",triggeringGeofences.toString());
         // Get the Ids of each geofence that was triggered.
         ArrayList triggeringGeofencesIdsList = new ArrayList();
         for (Geofence geofence : triggeringGeofences) {
             triggeringGeofencesIdsList.add(geofence.getRequestId());
+
+            nomeGeofence = geofence.getRequestId();
         }
         String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
 
@@ -100,6 +99,9 @@ public class GeofencesTransitionsIntentService extends IntentService {
     private void sendNotification(String notificationDetails) {
         // Create an explicit content Intent that starts the main Activity.
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        notificationIntent.putExtra("showButton",0);
+        notificationIntent.putExtra("geofence",nomeGeofence);
 
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);

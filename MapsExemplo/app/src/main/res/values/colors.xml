@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#da782c</color>
     <color name="colorPrimaryDark">#da782c</color>
-    <color name="colorAccent">#FFF</color>
+    <color name="colorAccent">#f2f27500</color>
     <color name="colorSplash">#da782c</color>
+    <color name="colorButton">#fdfdfd</color>
 </resources>

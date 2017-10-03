@@ -52,10 +52,11 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_check_in"
         android:layout_below="@id/mapFragmento"
-        android:background="@color/colorAccent"
+        android:background="@color/colorButton"
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
         android:onClick="doCheckin"
+        android:visibility="invisible"
 
         />
 
@@ -64,9 +65,10 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_camera"
         android:layout_below="@id/mapFragmento"
-        android:background="@color/colorAccent"
+        android:background="@color/colorButton"
         android:layout_marginTop="10dp"
         android:onClick="capturarFoto"
+        android:visibility="invisible"
         />
 
 
