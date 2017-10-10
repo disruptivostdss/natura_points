@@ -61,6 +61,7 @@ public class CheckInActivity extends AppCompatActivity {
         bitmap = BitmapFactory.decodeFile(uri, bmOptions);
 
         imgCheckin.setImageBitmap(bitmap);
+        txtNomeCheckin.setText(extras.getString("stop"));
     }
 
 

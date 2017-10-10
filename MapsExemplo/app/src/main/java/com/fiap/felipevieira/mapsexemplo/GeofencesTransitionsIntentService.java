@@ -10,7 +10,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
+
 
 import com.google.android.gms.location.Geofence;
 
@@ -40,7 +40,6 @@ public class GeofencesTransitionsIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if(geofencingEvent.hasError()){
             String errorMessage = Integer.toString(geofencingEvent.getErrorCode());
@@ -48,20 +47,30 @@ public class GeofencesTransitionsIntentService extends IntentService {
             return;
         }
 
+
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
+        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+                geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL ||
+                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
 
-        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
-            List<Geofence> triggeringGeofences =
-                    geofencingEvent.getTriggeringGeofences();
-            Log.i("TRIGGER_GEOFENCE",triggeringGeofences.toString());
-            sendNotification(getGeofenceTransitionDetails(this,geofenceTransition,triggeringGeofences));
+            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
-        }else
-            if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
-                //IMPLEMENTAR
+
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+                    geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+                sendNotification(getGeofenceTransitionDetails(this,geofenceTransition,triggeringGeofences));
+
+
+            } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                sendNotification(getGeofenceTransitionDetails(this,geofenceTransition,triggeringGeofences));
             }
+
+        }
+
     }
+
+
 
 
     private String getGeofenceTransitionDetails(
@@ -94,6 +103,8 @@ public class GeofencesTransitionsIntentService extends IntentService {
                 return getString(R.string.unknown_geofence_transition);
         }
     }
+
+
 
 
     private void sendNotification(String notificationDetails) {
@@ -140,5 +151,6 @@ public class GeofencesTransitionsIntentService extends IntentService {
         // Issue the notification
         mNotificationManager.notify(0, builder.build());
     }
+
 
 }

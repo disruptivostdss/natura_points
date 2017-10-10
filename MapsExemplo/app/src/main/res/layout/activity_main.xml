@@ -47,29 +47,38 @@
         tools:context="com.fiap.felipevieira.mapsexemplo.MainActivity"/>
 
 
-    <ImageButton android:id="@+id/btnCheckin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_check_in"
-        android:layout_below="@id/mapFragmento"
-        android:background="@color/colorButton"
-        android:layout_centerInParent="true"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
         android:layout_marginTop="10dp"
-        android:onClick="doCheckin"
-        android:visibility="invisible"
-
-        />
-
-    <ImageButton android:id="@+id/btnFoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_camera"
+        android:id="@+id/botoesFragment"
         android:layout_below="@id/mapFragmento"
-        android:background="@color/colorButton"
-        android:layout_marginTop="10dp"
-        android:onClick="capturarFoto"
-        android:visibility="invisible"
-        />
+        tools:context="com.fiap.felipevieira.mapsexemplo.MainActivity"
+        android:visibility="invisible">
+
+        <ImageButton android:id="@+id/btnCheckin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_check_in"
+            android:background="@color/colorButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:onClick="doCheckin"
+            />
+
+        <ImageButton android:id="@+id/btnFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_camera"
+            android:layout_gravity="left"
+            android:background="@color/colorButton"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:onClick="capturarFoto"
+            />
+
+    </FrameLayout>
 
 
 

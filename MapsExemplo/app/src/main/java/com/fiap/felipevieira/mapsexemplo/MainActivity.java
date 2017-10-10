@@ -2,13 +2,19 @@ package com.fiap.felipevieira.mapsexemplo;
 
 import android.Manifest;
 
+import android.app.Fragment;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,11 +25,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -40,7 +48,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
@@ -50,6 +62,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+
+import static com.fiap.felipevieira.mapsexemplo.R.id.botoesFragment;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -67,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Usuario usuario;
     private String caminho;
     private ImageView imgUsuario;
-    private HashMap<String,Coordenada> hashListaCoordenada;
-    private ImageButton btnFoto;
-    private ImageButton btnCheckin;
+    private HashMap<String, Coordenada> hashListaCoordenada;
+    private FrameLayout botoesFragment;
+    private LatLng mCoordenadas;
+
 
     MarkerOptions mo;
     Marker marker;
-
-
+    String nomeGeofence;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +102,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         txtNomeUser = (TextView) findViewById(R.id.txtNomeUser);
         txtPontos = (TextView) findViewById(R.id.txtPontos);
         imgUsuario = (ImageView) findViewById(R.id.imgUsuario);
-        btnFoto = (ImageButton) findViewById(R.id.btnFoto);
-        btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
+        botoesFragment = (FrameLayout) findViewById(R.id.botoesFragment);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapFragmento);
+
 
 
         //CONFIGURAÇÃO EXIBIÇÃO FRAGMENTO MAPS
@@ -100,12 +116,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .rotateGesturesEnabled(true);
         mo = new MarkerOptions().position(new LatLng(0, 0)).title("Minha localização atual");
 
-
-
         mapFragment.getMapAsync(this);
         buildGoogleApiClient();
         carregaCoordenadas();
-
+        nomeGeofence = getIntent().getStringExtra("geofence");
 
         txtNomeUser.setText(usuario.getNome().toString());
         txtPontos.setText(String.valueOf(usuario.getPontos()) + " pontos");
@@ -114,9 +128,46 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        marker =  mMap.addMarker(mo);
+        marker = mMap.addMarker(mo);
+        desenhaFence();
 
 
+    }
+
+    private Circle geoFenceLimits;
+
+    private void drawGeofence() {
+
+
+        if (geoFenceLimits != null)
+            geoFenceLimits.remove();
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(geoFenceMarker.getPosition())
+                .strokeColor(Color.argb(50, 70, 70, 70))
+                .fillColor(Color.argb(100, 150, 150, 150))
+                .radius(Constantes.GEOFENCE_RADIUS_IN_METERS);
+        geoFenceLimits = mMap.addCircle(circleOptions);
+    }
+
+
+    private Marker geoFenceMarker;
+
+    // Create a marker for the geofence creation
+    private void markerForGeofence(LatLng latLng) {
+        String title = latLng.latitude + ", " + latLng.longitude;
+        // Define marker options
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                .title(title);
+        if (mMap != null) {
+            // Remove last geoFenceMarker
+            if (geoFenceMarker != null)
+                geoFenceMarker.remove();
+
+            geoFenceMarker = mMap.addMarker(markerOptions);
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -151,11 +202,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION },0);
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
 
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
 
     }
 
@@ -177,27 +229,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.i(LOG_TAG, location.toString());
 
 
-        LatLng mCoordenadas = new LatLng(location.getLatitude(), location.getLongitude());
+        mCoordenadas = new LatLng(location.getLatitude(), location.getLongitude());
         marker.setPosition(mCoordenadas);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mCoordenadas));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18), 2000, null);
 
-        int visibilidade = getIntent().getIntExtra("showButton",4);
+        desenhaFence();
 
-        if(visibilidade == 0){
-            btnCheckin.setVisibility(View.VISIBLE);
-            btnFoto.setVisibility(View.VISIBLE);
-        }else
-        {
-                btnCheckin.setVisibility(View.INVISIBLE);
-                btnFoto.setVisibility(View.INVISIBLE);
+        int visibilidade = getIntent().getIntExtra("showButton", 4);
+
+        if (visibilidade == 0) {
+            botoesFragment.setVisibility(View.VISIBLE);
+        } else {
+            botoesFragment.setVisibility(View.INVISIBLE);
         }
 
     }
 
-    public void doCheckin(View v){
+    public void doCheckin(View v) {
 
-        String nomeGeofence = getIntent().getStringExtra("geofence");
+
 
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle("Alerta de Check-in");
@@ -210,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 txtPontos.setText(String.valueOf(usuario.getPontos()) + " pontos");
                 dialogInterface.dismiss();
+
             }
         });
         b.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -223,20 +275,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ad.show();
 
 
+
+
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1){
+        if (requestCode == 1) {
 
             Intent iCheckIn = new Intent(this, CheckInActivity.class);
 
-            iCheckIn.putExtra("usuario",usuario);
+            iCheckIn.putExtra("usuario", usuario);
             iCheckIn.putExtra("uri", caminho);
-            Log.i("NATURA_POINTS",caminho);
-            startActivityForResult(iCheckIn,2);
+            iCheckIn.putExtra("stop",nomeGeofence);
+            Log.i("NATURA_POINTS", caminho);
+            startActivityForResult(iCheckIn, 2);
 
-        }else if(resultCode == -1 && requestCode == 2){
+        } else if (resultCode == -1 && requestCode == 2) {
             usuario = (Usuario) data.getSerializableExtra("usuario");
             txtPontos.setText(String.valueOf(usuario.getPontos()) + " pontos");
 
@@ -252,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mGeofenceList = new ArrayList<Geofence>();
 
         for (Map.Entry<String, Coordenada> entry : hashListaCoordenada.entrySet()) {
-            Log.i("DADOS_ARRAY",entry.getValue().toString());
+            Log.i("DADOS_ARRAY", Integer.toString(entry.getValue().getId()));
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
@@ -276,9 +333,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     // Create the geofence.
                     .build());
+
+
         }
         addGeofencesButtonHandler();
     }
+
+
 
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -305,6 +366,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     getGeofencingRequest(),
                     getGeofencePendingIntent())
                     .setResultCallback(MainActivity.this); // Result processed in onResult().
+
+
         } catch (SecurityException securityException) {
             // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
         }
@@ -315,22 +378,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onResult(Status status) {
         if (status.isSuccess()) {
-            Log.i("NATURA_POINTS","Geofences adicionadas!");
+            Log.i("NATURA_POINTS", "Geofences adicionadas!");
+
+            desenhaFence();
+
         } else {
             // Get the status code for the error and log it using a user-friendly message.
             String errorMessage = Integer.toString(status.getStatusCode());
         }
     }
 
+    private void desenhaFence() {
+        String nomeGeofence = getIntent().getStringExtra("geofence");
+
+        if(nomeGeofence != null && hashListaCoordenada != null) {
+            for (Map.Entry<String, Coordenada> entry : hashListaCoordenada.entrySet()) {
+                if (nomeGeofence.equals(entry.getKey())) {
+
+                    markerForGeofence(new LatLng(entry.getValue().getLatitude(),
+                            entry.getValue().getLongitude()));
+                    drawGeofence();
+
+                }
+            }
+
+        }
+    }
+
 
     //CAMERA
 
-    public void capturarFoto(View v){
+    public void capturarFoto(View v) {
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
         File image = null;
         try {
-            image = File.createTempFile("foto",".jpg",storageDir);
+            image = File.createTempFile("foto", ".jpg", storageDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -345,10 +428,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void carregaCoordenadas() {
 
-        final String URL = "http://nwebservice.mybluemix.net/rest/stop";
+        final String URL = "http://npoints.mybluemix.net/rest/stop";
 
 
-        JsonObjectRequest req = new JsonObjectRequest(URL,null,
+        JsonArrayRequest req = new JsonArrayRequest(
+                URL,
                 new RequestCoordenada(),
                 new RequestError());
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -357,19 +441,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    public class RequestCoordenada implements com.android.volley.Response.Listener<JSONObject>{
-
+    public class RequestCoordenada implements com.android.volley.Response.Listener<JSONArray> {
 
 
         @Override
-        public void onResponse(JSONObject response) {
+        public void onResponse(JSONArray response) {
             hashListaCoordenada = new HashMap<String, Coordenada>();
 
-            try {
-                JSONArray a = response.getJSONArray("lista");
-                Log.i("COORDENADAS_ARRAY", a.toString());
-                for (int i = 0;i < a.length();i++) {
-                    JSONObject obj = a.getJSONObject(i);
+            for (int i = 0; i < response.length(); i++) {
+                try {
+                    JSONObject obj = response.getJSONObject(i);
                     Log.i("COORDENADAS_OBJETO", obj.toString());
                     Coordenada c = new Coordenada(
                             obj.getInt("id"),
@@ -377,12 +458,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             obj.getDouble("latitude"),
                             obj.getDouble("longitude"),
                             obj.getString("descricao"));
-                    hashListaCoordenada.put(obj.getString("nome"),c);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+                    hashListaCoordenada.put(obj.getString("nome"), c);
 
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             populateGeofenceList();
         }
     }
